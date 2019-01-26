@@ -29,9 +29,6 @@ void Indexer::indexDirectory(FilesTrigrams &filesTrigrams) {
         if (needStop) {
             break;
         }
-        if (needStop) {
-             break;
-         }
         QFileInfo fileInfo(dirIt.next());
         curSize += fileInfo.size();
         if (!fileInfo.permission(QFile::ReadUser)) {

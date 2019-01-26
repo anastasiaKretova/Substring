@@ -28,7 +28,7 @@ signals:
     void newFile(const QString &);
 
 private:
-    qint64 size;
+    qint64 size = 0;
     void progress(qint64 curSize, qint8 curPercent);
     bool checkFile(QFile &file);
 

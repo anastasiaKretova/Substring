@@ -31,6 +31,7 @@ void Worker::scanDirectory() {
     connect(&scanner, SIGNAL(finished()), mainWindow, SLOT(postScanInterface()));
     connect(&scanner, SIGNAL(interrupted()), mainWindow, SLOT(postIndexInterface()));
     connect(&scanner, SIGNAL(updateProgress(qint8)), mainWindow, SLOT(setProgress(qint8)));
+    connect(&scanner, SIGNAL(newFile(const QString &)), mainWindow, SLOT(newFile(const QString &)));
 
     try {
         scanner.searchPattern();
