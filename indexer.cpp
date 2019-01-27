@@ -85,7 +85,7 @@ qint32 Indexer::hashTrigram(char *trigramPointer) {
 }
 
 void Indexer::progress() {
-    qint64 percent = curSize / size * 100;
+    qint8 percent = static_cast<qint8>(100 * curSize / size);
     if (percent > curPercent) {
         curPercent = percent;
         emit updateProgress(percent);
