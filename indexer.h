@@ -25,16 +25,16 @@ signals:
     void started();
     void finished();
     void interrupted();
-    void updateProgress(qint8 progress);
+    void updateProgress(qint64 progress);
 
 public slots:
     void stop();
 
 private:
-    void progress(qint64 curSize, qint8 curPercent);
+    void progress();
     QFileSystemWatcher *watcher;
     QString directory;
-    qint64 size;
+    qint64 size = 0, curSize = 0, curPercent = 0;
     bool needStop;
 };
 
