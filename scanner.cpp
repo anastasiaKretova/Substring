@@ -25,7 +25,7 @@ Scanner::~Scanner() {
     delete[] pattern;
 }
 
-qint32 Scanner::getTrigram(char * pointer) {
+qint32 Scanner::getTrigram(char *pointer) {
     qint32 result = 0;
     for (int i = 0; i < 3; i++) {
         result = result * MAX_CHAR + qint32(pointer[i]);
@@ -99,7 +99,7 @@ bool Scanner::checkFile(QFile &file, FileTrigrams fileTrigrams) {
 }
 
 void Scanner::progress() {
-    qint64 percent = curSize / size * 100;
+    qint8 percent = static_cast<qint8>(100 * curSize / size);
     if (percent > curPercent) {
         curPercent = percent;
         emit updateProgress(percent);
