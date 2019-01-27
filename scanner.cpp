@@ -13,11 +13,12 @@ Scanner::Scanner(QString const & stringPattern, FilesTrigrams *filesTrigrmas) {
     this->stringPattern = stringPattern;
     this->filesTrigrams = filesTrigrmas;
     this->needStop = false;
-    pattern = new char[static_cast<qint32>(stringPattern.size()) + 1];
-    memcpy(pattern, stringPattern.toLatin1().data(), stringPattern.size());
-    pattern[stringPattern.size()] = '\0';
+    std::vector<char> pattern(static_cast<qint32>(stringPattern.size()) + 1);
+    //pattern = new char[static_cast<qint32>(stringPattern.size()) + 1];
+    memcpy(pattern.data(), stringPattern.toLatin1().data(), stringPattern.size());
+    pattern.data()[stringPattern.size()] = '\0';
     for (qint32 i = 0; i < (qint32)(stringPattern.size()) - SHIFT; ++i) {
-        patternTrigrams.push_back(getTrigram(pattern + i));
+        patternTrigrams.push_back(getTrigram(pattern.data() + i));
     }
 }
 
