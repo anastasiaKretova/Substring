@@ -22,8 +22,6 @@ void Indexer::indexDirectory(FilesTrigrams &filesTrigrams) {
         return;
     }
 
-    qint64 curSize = 0;
-    qint8 curPercent = 0;
     QDirIterator dirIt(directory, QDir::Files, QDirIterator::Subdirectories);
     while (dirIt.hasNext()) {
         if (needStop) {
@@ -47,7 +45,7 @@ void Indexer::indexDirectory(FilesTrigrams &filesTrigrams) {
         catch(std::logic_error) {
 
         }
-        progress(curSize, curPercent);
+        progress();
      }
      if (needStop) emit interrupted();
      else emit finished();
@@ -86,10 +84,10 @@ qint32 Indexer::hashTrigram(char *trigramPointer) {
     return hash;
 }
 
-void Indexer::progress(qint64 curSize, qint8 curPersent) {
-    qint8 percent = curSize / size * 100;
-    if (percent > curPersent) {
-        curPersent = percent;
+void Indexer::progress() {
+    qint64 percent = curSize / size * 100;
+    if (percent > curPercent) {
+        curPercent = percent;
         emit updateProgress(percent);
     }
 }
