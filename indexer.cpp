@@ -61,23 +61,22 @@ void Indexer::indexFile(QFile &file, FileTrigrams &fileTrigrams) {
         throw std::logic_error("Can't open file " + file.fileName().toStdString());
     }
 
-    char *buffer = new char[BUFFER_SIZE];
-    file.read(buffer, SHIFT);
+    std::vector<char> buffer(BUFFER_SIZE + 1);
+    //char *buffer = new char[BUFFER_SIZE];
+    file.read(buffer.data(), SHIFT);
 
     while (!file.atEnd()) {
         if (needStop) {
             break;
         }
-        qint64 size = SHIFT + file.read(buffer + SHIFT, BUFFER_SIZE - SHIFT);
+        qint64 size = SHIFT + file.read(buffer.data() + SHIFT, BUFFER_SIZE - SHIFT);
         if (fileTrigrams.trigrams.size() >= MAGIC_TRIGRAMS) {
             break;
         }
         for (qint64 i = 0; i < size - SHIFT; i++) {
-            fileTrigrams.trigrams.insert(hashTrigram(buffer + i));
+            fileTrigrams.trigrams.insert(hashTrigram(buffer.data() + i));
         }
     }
-    delete[] buffer;
-    file.close();
 }
 
 qint32 Indexer::hashTrigram(char *trigramPointer) {
