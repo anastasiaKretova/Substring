@@ -30,7 +30,7 @@ signals:
 private:
     qint64 size = 0;
     void progress(qint64 curSize, qint8 curPercent);
-    bool checkFile(QFile &file);
+    bool checkFile(QFile &file, FileTrigrams fileTrigrams);
 
     QString stringPattern;
     char *pattern;
