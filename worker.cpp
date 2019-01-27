@@ -61,11 +61,11 @@ void Worker::updateFile(const QString &path) {
     }
 
     Indexer indexer(dir, watcher);
-    filesTrigrams[path].clear();
+    filesTrigrams.remove(path);
     QFile file(path);
-    FileTrigrams fileTrigrams;
+    FileTrigrams fileTrigrams(fileInfo.size());
     indexer.indexFile(file, fileTrigrams);
-    filesTrigrams[path] = fileTrigrams;
+    filesTrigrams.insert(path, fileTrigrams);
 }
 
 void Worker::stop() {

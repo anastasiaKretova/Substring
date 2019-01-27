@@ -7,6 +7,10 @@ const qint8 SHIFT = 2;
 const qint64 MAX_CHAR = 256;
 const qint32 MAGIC_TRIGRAMS = 20000;
 
+FileTrigrams::FileTrigrams(qint64 fileSize)
+    : fileSize(fileSize)
+{}
+
 Indexer::Indexer(QString const &directory, QFileSystemWatcher *watcher)
     : watcher(watcher), directory(directory), needStop(false) {}
 
@@ -28,19 +32,20 @@ void Indexer::indexDirectory(FilesTrigrams &filesTrigrams) {
             break;
         }
         QFileInfo fileInfo(dirIt.next());
-        curSize += fileInfo.size();
+        qint64 fileSize = fileInfo.size();
+        curSize += fileSize;
         if (!fileInfo.permission(QFile::ReadUser)) {
             continue;
         }
-        FileTrigrams fileTrigrams;
+        FileTrigrams fileTrigrams(fileSize);
         QFile file(fileInfo.absoluteFilePath());
         try {
             indexFile(file, fileTrigrams);
-            if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
+            if (fileTrigrams.trigrams.size() >= MAGIC_TRIGRAMS) {
                 continue;
             }
             watcher->addPath(fileInfo.absoluteFilePath());
-            filesTrigrams[fileInfo.absoluteFilePath()] = fileTrigrams;
+            filesTrigrams.insert(fileInfo.absoluteFilePath(), std::move(fileTrigrams));
             }
         catch(std::logic_error) {
 
@@ -64,11 +69,11 @@ void Indexer::indexFile(QFile &file, FileTrigrams &fileTrigrams) {
             break;
         }
         qint64 size = SHIFT + file.read(buffer + SHIFT, BUFFER_SIZE - SHIFT);
-        if (fileTrigrams.size() >= MAGIC_TRIGRAMS) {
+        if (fileTrigrams.trigrams.size() >= MAGIC_TRIGRAMS) {
             break;
         }
         for (qint64 i = 0; i < size - SHIFT; i++) {
-            fileTrigrams.insert(hashTrigram(buffer + i));
+            fileTrigrams.trigrams.insert(hashTrigram(buffer + i));
         }
     }
     delete[] buffer;

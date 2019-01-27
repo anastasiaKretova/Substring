@@ -35,12 +35,11 @@ qint32 Scanner::getTrigram(char *pointer) {
 
 void Scanner::searchPattern() {
     emit started();
-    for (auto path: filesTrigrams->keys()) {
+    for (auto it = filesTrigrams->begin(); it != filesTrigrams->end(); it++) {
         if (needStop) {
             break;
         }
-        QFileInfo info(path);
-        size += info.size();
+        size += it.value().fileSize;
     }
     if (size == 0) {
         emit updateProgress(100);
@@ -51,8 +50,7 @@ void Scanner::searchPattern() {
         if (needStop) {
             break;
         }
-        QFileInfo info(it.key());
-        curSize += info.size();
+        curSize += it.value().fileSize;
 
         QFile file(it.key());
         if (checkFile(file, it.value())) {
@@ -68,33 +66,30 @@ void Scanner::searchPattern() {
 }
 
 bool Scanner::checkFile(QFile &file, FileTrigrams fileTrigrams) {
+    for (auto trigram: patternTrigrams) {
+        if (!fileTrigrams.trigrams.contains(trigram)) return 0;
+    }
+
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::logic_error("Can't open file: " + file.fileName().toStdString());
     }
 
-    for (auto trigram: patternTrigrams) {
-        if (!fileTrigrams.contains(trigram)) return 0;
-    }
-
-    qint64  patternShift = qint64(stringPattern.size()) - 1;
-    char *buffer = new char[BUFFER_SIZE + 1];
+    qint64 patternShift = qint64(stringPattern.size()) - 1;
+    std::vector<char> buffer(BUFFER_SIZE + 1);
+    //char *buffer = new char[BUFFER_SIZE + 1];
     buffer[BUFFER_SIZE] = '\0';
-    file.read(buffer, patternShift);
+    file.read(buffer.data(), patternShift);
     while (!file.atEnd()) {
         if (needStop) {
             break;
         }
-        qint64 size = patternShift + file.read(buffer + patternShift, BUFFER_SIZE - patternShift);
+        qint64 size = patternShift + file.read(buffer.data() + patternShift, BUFFER_SIZE - patternShift);
         buffer[size] = '\0';
-        char *ptr = strstr(buffer, pattern);
+        char *ptr = strstr(buffer.data(), pattern);
         if (ptr) {
-            file.close();
-            delete[] buffer;
             return 1;
         }
     }
-    file.close();
-    delete[] buffer;
     return 0;
 }
 
