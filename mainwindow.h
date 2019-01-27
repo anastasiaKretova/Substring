@@ -41,7 +41,7 @@ signals:
 
 private:
     std::unique_ptr<Ui::MainWindow> ui;
-    Worker *worker;
+    std::unique_ptr<Worker> worker;
     QThread *thread;
 
     void resetThread();
