@@ -47,8 +47,6 @@ void Scanner::searchPattern() {
         return;
     }
 
-    qint64 curSize = 0;
-    qint8 curPercent = 0;
     for (auto it = filesTrigrams->begin(); it != filesTrigrams->end(); it++) {
         if (needStop) {
             break;
@@ -60,7 +58,7 @@ void Scanner::searchPattern() {
         if (checkFile(file, it.value())) {
             emit newFile(file.fileName());
         }
-        progress(curSize, curPercent);
+        progress();
     }
     if (needStop) {
         emit interrupted();
@@ -100,8 +98,8 @@ bool Scanner::checkFile(QFile &file, FileTrigrams fileTrigrams) {
     return 0;
 }
 
-void Scanner::progress(qint64 curSize, qint8 curPercent) {
-    qint8 percent = curSize / size * 100;
+void Scanner::progress() {
+    qint64 percent = curSize / size * 100;
     if (percent > curPercent) {
         curPercent = percent;
         emit updateProgress(percent);
