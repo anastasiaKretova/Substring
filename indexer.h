@@ -7,7 +7,14 @@
 #include <QSet>
 #include <QMap>
 
-using FileTrigrams = QSet<qint32>;
+struct FileTrigrams
+{
+    FileTrigrams() = delete;
+    FileTrigrams(qint64 fileSize);
+    qint64 fileSize;
+    QSet<qint32> trigrams;
+};
+
 using FilesTrigrams = QMap<QString, FileTrigrams>;
 
 class Indexer : public QObject {
