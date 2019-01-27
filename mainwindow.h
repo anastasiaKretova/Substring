@@ -28,7 +28,7 @@ public slots:
     void postScanInterface();
     void selectDirectory();
     void showAboutDialog();
-    void setProgress(qint64 progress);
+    void setProgress(qint8 progress);
     void openFile(QTreeWidgetItem *, int);
     void searchSubstring();
     void newFile(const QString &);
