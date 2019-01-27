@@ -157,7 +157,7 @@ void main_window::setupInterface() {
     setWindowTitle(QString("Please select directory to scan"));
 }
 
-void main_window::setProgress(qint64 progress) {
+void main_window::setProgress(qint8 progress) {
     ui->progressBar->setValue(progress);
 }
 
