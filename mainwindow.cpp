@@ -73,16 +73,17 @@ void main_window::selectDirectory()
     setupInterface();
     setWindowTitle(dir);
     resetThread();
-    worker = new Worker(dir, this);
+    auto worker = std::make_unique<Worker>(dir,this);
+    //worker = new Worker(dir, this);
     thread = new QThread();
     worker->moveToThread(thread);
 
 
-    connect(this, SIGNAL(stopWorker()), worker, SLOT(stop()), Qt::DirectConnection);
-    connect(thread, SIGNAL(started()), worker, SLOT(indexDirectory()));
+    connect(this, SIGNAL(stopWorker()), worker.get(), SLOT(stop()), Qt::DirectConnection);
+    connect(thread, SIGNAL(started()), worker.get(), SLOT(indexDirectory()));
     //connect(thread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     //connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-    connect(this, SIGNAL(doSearch(const QString&)), worker, SLOT(newPattern(const QString&)));
+    connect(this, SIGNAL(doSearch(const QString&)), worker.get(), SLOT(newPattern(const QString&)));
     thread->start();
 }
 
