@@ -49,15 +49,15 @@ void Scanner::searchPattern() {
 
     qint64 curSize = 0;
     qint8 curPercent = 0;
-    for (auto path: filesTrigrams->keys()) {
+    for (auto it = filesTrigrams->begin(); it != filesTrigrams->end(); it++) {
         if (needStop) {
             break;
         }
-        QFileInfo info(path);
+        QFileInfo info(it.key());
         curSize += info.size();
 
-        QFile file(path);
-        if (checkFile(file)) {
+        QFile file(it.key());
+        if (checkFile(file, it.value())) {
             emit newFile(file.fileName());
         }
         progress(curSize, curPercent);
@@ -69,9 +69,13 @@ void Scanner::searchPattern() {
     }
 }
 
-bool Scanner::checkFile(QFile &file) {
+bool Scanner::checkFile(QFile &file, FileTrigrams fileTrigrams) {
     if (!file.open(QIODevice::ReadOnly)) {
         throw std::logic_error("Can't open file: " + file.fileName().toStdString());
+    }
+
+    for (auto trigram: patternTrigrams) {
+        if (!fileTrigrams.contains(trigram)) return 0;
     }
 
     qint64  patternShift = qint64(stringPattern.size()) - 1;
