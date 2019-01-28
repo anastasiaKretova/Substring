@@ -13,7 +13,7 @@ class Scanner : public QObject {
 
 public :
     Scanner(QString const &dir, FilesTrigrams *filesTrigrams);
-    ~Scanner();
+    ~Scanner() = default;
 
     void searchPattern();
 
@@ -34,7 +34,8 @@ private:
     bool checkFile(QFile &file, FileTrigrams fileTrigrams);
 
     QString stringPattern;
-    char *pattern;
+    //char *pattern;
+    std::vector<char> pattern;
     FilesTrigrams *filesTrigrams;
     PatternTrigrams patternTrigrams;
     qint32 getTrigram(char *pointer);
