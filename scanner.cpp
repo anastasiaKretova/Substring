@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QFile>
 #include <iostream>
+#include <QLatin1String>
 
 const qint32 SHIFT = 2;
 const qint32 MAX_CHAR = 256;
@@ -13,17 +14,14 @@ Scanner::Scanner(QString const & stringPattern, FilesTrigrams *filesTrigrmas) {
     this->stringPattern = stringPattern;
     this->filesTrigrams = filesTrigrmas;
     this->needStop = false;
-    std::vector<char> pattern(static_cast<qint32>(stringPattern.size()) + 1);
-    //pattern = new char[static_cast<qint32>(stringPattern.size()) + 1];
-    memcpy(pattern.data(), stringPattern.toLatin1().data(), stringPattern.size());
-    pattern.data()[stringPattern.size()] = '\0';
+    std::string k = stringPattern.toStdString();
+    for (int i = 0; i < stringPattern.size(); ++i) {
+        pattern.push_back(k[i]);
+    }
+    pattern.push_back('\0');
     for (qint32 i = 0; i < (qint32)(stringPattern.size()) - SHIFT; ++i) {
         patternTrigrams.push_back(getTrigram(pattern.data() + i));
     }
-}
-
-Scanner::~Scanner() {
-    delete[] pattern;
 }
 
 qint32 Scanner::getTrigram(char *pointer) {
@@ -76,17 +74,15 @@ bool Scanner::checkFile(QFile &file, FileTrigrams fileTrigrams) {
     }
 
     qint64 patternShift = qint64(stringPattern.size()) - 1;
-    std::vector<char> buffer(BUFFER_SIZE + 1);
-    //char *buffer = new char[BUFFER_SIZE + 1];
-    buffer[BUFFER_SIZE] = '\0';
+    std::vector<char> buffer(BUFFER_SIZE);
     file.read(buffer.data(), patternShift);
     while (!file.atEnd()) {
         if (needStop) {
             break;
         }
         qint64 size = patternShift + file.read(buffer.data() + patternShift, BUFFER_SIZE - patternShift);
-        buffer[size] = '\0';
-        char *ptr = strstr(buffer.data(), pattern);
+        buffer.push_back('\0');
+        char *ptr = strstr(buffer.data(), pattern.data());
         if (ptr) {
             return 1;
         }
