@@ -73,7 +73,7 @@ void main_window::selectDirectory()
     setupInterface();
     setWindowTitle(dir);
     resetThread();
-    auto worker = std::make_unique<Worker>(dir,this);
+    worker = std::make_unique<Worker>(dir,this);
     //worker = new Worker(dir, this);
     thread = new QThread();
     worker->moveToThread(thread);
